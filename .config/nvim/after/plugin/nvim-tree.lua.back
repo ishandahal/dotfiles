@@ -1,0 +1,45 @@
+-- local api = require('nvim-tree.api')
+--
+vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<cr>', { desc = 'Toggle nvim-tree to the left' })
+--
+-- require('nvim-tree').setup({})
+--   hijack_cursor = false,
+--   on_attach = function(bufnr)
+--     local bufmap = function(lhs, rhs, desc)
+--       vim.keymap.set('n', lhs, rhs, {buffer = bufnr, desc = desc})
+--     end
+--
+--     -- See :help nvim-tree.api
+--     local api = require('nvim-tree.api')
+--    
+--     bufmap('L', api.node.open.edit, 'Expand folder or go to file')
+--     bufmap('H', api.node.navigate.parent_close, 'Close parent folder')
+--     bufmap('gh', api.tree.toggle_hidden_filter, 'Toggle hidden files')
+--   end
+--   })
+-- [[							Buggy code above 								]] --
+--
+
+local function my_on_attach(bufnr)
+  local api = require "nvim-tree.api"
+
+  local function opts(desc)
+    return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+  end
+
+  -- default mappings
+  api.config.mappings.default_on_attach(bufnr)
+
+  -- custom mappings
+  vim.keymap.set('n', '<C-t>', api.tree.change_root_to_parent,        opts('Up'))
+  -- vim.keymap.set('n', '<leader>e', vim.cmd.NvimTreeToggle,        opts('Up'))
+  vim.keymap.set('n', '?',     api.tree.toggle_help,                  opts('Help'))
+  vim.keymap.set('n', 'L',     api.node.open.edit,                  opts('Expand folder or go to file'))
+end
+
+-- pass to setup along with your other options
+require("nvim-tree").setup {
+  ---
+  on_attach = my_on_attach,
+  ---
+}
